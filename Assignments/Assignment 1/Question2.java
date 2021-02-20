@@ -66,7 +66,8 @@ public class Question2 {
         sc.computeSum();
         System.out.println("Total Sum : "+sc.getSum());
         long endTimeSerial = System.nanoTime();
-        System.out.println("Serial Program Took :"+(endTimeSerial - startTimeSerial)+"ns");
+        double serialTime = endTimeSerial - startTimeSerial;
+        System.out.println("Serial Program Took :"+serialTime+"ns");
         long times[] = new long[3];
         int k = 0;
         for(int i=2;i<=8;i=i*2){
@@ -85,7 +86,7 @@ public class Question2 {
         }
         int l = 2;
         for(long time:times){
-            System.out.println("Time taken to execute the program with "+l+" parallel compute units is: "+time+"ns");
+            System.out.printf("Time taken to execute the program with %d parallel compute units is: %d ns with speedup: %.2f\n",l,time,(serialTime / time));
             l = l * 2;
         }
     }
