@@ -1,8 +1,7 @@
 /*
  * Let us say we have a game where randomly with given probability p, a thread would reward a person Rs.10 and simultaneously
  * another thread would withdraw money by Rs.10 from a person with probability q (1-p). The person who starts the game starts initially with
- * Rs.100. If the amount goes to 0, he is declared bankrupt.
- * Let us say the game draws its outcome every hour. What is the outcome of the game after 10 hours? Or, what is the amount of money that the
+ * Rs.100. Let us say the game draws its outcome every hour. What is the outcome of the game after 10 hours? Or, what is the amount of money that the
  * person would end up with after 10 hours? 
  */
 class Game{
@@ -21,30 +20,30 @@ class Game{
         return p;
     }
     int getAmount(){
-        int temp;
-        synchronized(this){
-            temp = currAmount;
+        int temp = 0;//S1
+        synchronized(this){//S2
+            temp = currAmount;//S3
         }
-        return temp;
+        return temp;//S4
     }
     void incrementAmount(){
-        int temp = getAmount();
-        temp = temp + 10;
-        synchronized(this){
-            currAmount = temp;
-            currHour++;
+        int temp = getAmount();//S5
+        temp = temp + 10;//S6
+        synchronized(this){//S7
+            currAmount = temp;//S8
+            currHour++;//S9
         }
     }
     void decrementAmount(){
-        int temp = getAmount();
-        synchronized(this){
-            if(temp <= 10){
-                temp = 0;
-            }else{
-                temp -= 10;
+        int temp = getAmount();//S10
+        synchronized(this){//S11
+            if(temp <= 10){//S12
+                temp = 0;//S13
+            }else{//S14
+                temp -= 10;//S15
             }
-            currHour++;
-            currAmount = temp;
+            currHour++;//S16
+            currAmount = temp;//S17
         }
     }
 }

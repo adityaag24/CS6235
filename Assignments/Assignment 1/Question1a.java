@@ -1,7 +1,9 @@
 class IncrementVar{
     int total = 0;
     public void increment(){
-        total += 1;
+        int temp = total;//S1
+        temp = temp + 1;//S2
+        total = temp;//S3
     }
     public int getValue(){
         return total;
