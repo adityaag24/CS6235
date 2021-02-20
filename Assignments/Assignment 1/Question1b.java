@@ -61,8 +61,10 @@ class GameRunner implements Runnable{
         }
     }
 }
-public class Question2 {
+public class Question1b {
     public static void main(String[] args)throws InterruptedException{
+        System.out.println();
+        System.out.println("*********Welcome to the Game of Chance*********\n");
         Game g = new Game();
         double p;
         int trueAmount = 100;
