@@ -18,6 +18,7 @@ class WisherThread extends Thread{
         this.name = name;
     }
     public void run(){
+        System.out.println(Thread.currentThread().getName()+ " is using Wisher object, details: "+w);
         w.greet(name);
     }
 }
