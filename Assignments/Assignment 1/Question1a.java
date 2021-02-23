@@ -1,32 +1,50 @@
-class IncrementVar{
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+class TotalArr{
     int total = 0;
-    public void increment(){
-        int temp = total;//S1
-        temp = temp + 1;//S2
-        total = temp;//S3
+    int arr[] = new int[4];
+    TotalArr(){
+        for(int i=0;i<4;i++){
+            arr[i] = i+1;
+        }
     }
-    public int getValue(){
-        return total;
+    void doJob(int idx)throws InterruptedException{
+        int temp = total;
+        Thread.sleep(1000);
+        temp = temp + arr[idx];
+        total = temp;
+    }
+    void printTotal(){
+        System.out.println(total);
     }
 }
-class myThread implements Runnable{
-    IncrementVar var;
-    myThread(IncrementVar inc){
-        this.var = inc;
+
+class myThread extends Thread{
+    TotalArr tot;
+    CountDownLatch ctd;
+    int idx;
+    myThread(int idx,CountDownLatch ctd,TotalArr tot){
+        this.tot = tot;
+        this.idx = idx;
+        this.ctd = ctd;
     }
     public void run(){
-        var.increment();
+        try{
+        tot.doJob(idx);
+        }catch(InterruptedException e){}
+        ctd.countDown();
     }
 }
+
 public class Question1a{
     public static void main(String[] args)throws InterruptedException{
-        IncrementVar var = new IncrementVar();
-        myThread []threads = new myThread[1000];
-        for(int i=0;i<1000;i++){
-            threads[i] = new myThread(var);
-            new Thread(threads[i]).start();
+        CountDownLatch ctd = new CountDownLatch(4);
+        TotalArr tot = new TotalArr();
+        for(int i=1;i<=4;i++){
+            int idx = i-1;//Returns a random number between 0 (inclusive) and 5 (inclusive)
+            (new myThread(idx,ctd,tot)).start();
         }
-        Thread.sleep(1);
-        System.out.println("Value of Increment Variable : "+var.getValue());
+        ctd.await();
+        tot.printTotal();
     }
 }
