@@ -1,51 +1,31 @@
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-class TotalArr{
-    int total = 0;
-    int arr[] = new int[4];
-    TotalArr(){
-        for(int i=0;i<4;i++){
-            arr[i] = i+1;
-        }
-    }
-    void doJob(int idx)throws InterruptedException{
-        int temp = total;
-        Thread.sleep(1000);
-        System.out.println("Thread "+Thread.currentThread().getName()+" is executing the update to total. Current Value = "+total);
-        temp = temp + arr[idx];
-        total = temp;
-    }
-    void printTotal(){
-        System.out.println(total);
+
+class Greeter{
+    public void greet(String name){
+        System.out.print("Hello there, ");
+        System.out.println(name);
     }
 }
-
 class myThread extends Thread{
-    TotalArr tot;
     CountDownLatch ctd;
-    int idx;
-    myThread(int idx,CountDownLatch ctd,TotalArr tot){
-        this.tot = tot;
-        this.idx = idx;
+    Greeter obj;
+    myThread(Greeter obj,CountDownLatch ctd){
         this.ctd = ctd;
+        this.obj = obj;
     }
     public void run(){
-        try{
-        tot.doJob(idx);
-        }catch(InterruptedException e){}
+        obj.greet(Thread.currentThread().getName());
         ctd.countDown();
     }
 }
 
 public class Question1a{
     public static void main(String[] args)throws InterruptedException{
-        CountDownLatch ctd = new CountDownLatch(4);
-        TotalArr tot = new TotalArr();
-        for(int i=1;i<=4;i++){
-            int idx = i-1;//Returns a random number between 0 (inclusive) and 5 (inclusive)
-            (new myThread(idx,ctd,tot)).start();
+        CountDownLatch ctd = new CountDownLatch(10);
+        Greeter obj = new Greeter();
+        for(int i=1;i<=10;i++){
+            (new myThread(obj,ctd)).start();
         }
         ctd.await();
-        tot.printTotal();
     }
 }

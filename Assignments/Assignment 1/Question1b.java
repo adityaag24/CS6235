@@ -5,19 +5,15 @@
  * person would end up with after 10 hours? 
  */
 class Game{
-    int currAmount,currHour;
+    int currAmount;
     double p,q;
     Game(){
         currAmount = 100;
         p = 0.4;
-        currHour = 0;
         q = 1 - p;
     }
-    void printCurrentAmountHour(){
-        System.out.println("Hour #"+currHour+" CurrentAmount: "+currAmount);
-    }
-    double getProbabilitySuccess(){
-        return p;
+    void printCurrentAmount(){
+        System.out.println("CurrentAmount: "+currAmount);
     }
     int getAmount(){
         int temp = 0;//S1
@@ -31,18 +27,12 @@ class Game{
         temp = temp + 10;//S6
         synchronized(this){//S7
             currAmount = temp;//S8
-            currHour++;//S9
         }
     }
     void decrementAmount(){
         int temp = getAmount();//S10
+        temp = temp - 10;
         synchronized(this){//S11
-            if(temp <= 10){//S12
-                temp = 0;//S13
-            }else{//S14
-                temp -= 10;//S15
-            }
-            currHour++;//S16
             currAmount = temp;//S17
         }
     }
@@ -70,7 +60,7 @@ public class Question1b {
         for(int i=0;i<10;i++){
             //Playing for 10 hours
             p = Math.random();
-            if(g.getProbabilitySuccess() < p){
+            if(g.p < p){
                 //He won
                 trueAmount += 10;
                 System.out.println("He won the current draw");
@@ -85,9 +75,9 @@ public class Question1b {
                 new Thread(new GameRunner(g),"Decrementer").start();
                 System.out.println("Thread Execution Output");
             }
-            g.printCurrentAmountHour();
+            g.printCurrentAmount();
             System.out.println();
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         }
         System.out.println("Final Expected Output: "+trueAmount);
         System.out.println("Thread Execution Output: "+g.getAmount());
