@@ -11,6 +11,7 @@ class TotalArr{
     void doJob(int idx)throws InterruptedException{
         int temp = total;
         Thread.sleep(1000);
+        System.out.println("Thread "+Thread.currentThread().getName()+" is executing the update to total. Current Value = "+total);
         temp = temp + arr[idx];
         total = temp;
     }
