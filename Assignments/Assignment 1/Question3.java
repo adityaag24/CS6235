@@ -1,12 +1,7 @@
+package WA;
 class Wisher{
     public void greet(String name){
-        System.out.print("Hello, ");
-        try{
-            Thread.sleep(1000);
-        }catch(InterruptedException e){
-            System.out.println("I got interrupted.");
-        }
-        System.out.println(name);
+        System.out.println("Hello there! "+name);
     }
 }
 

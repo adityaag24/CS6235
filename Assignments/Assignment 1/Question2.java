@@ -1,30 +1,30 @@
 import java.util.concurrent.locks.*;
 import java.util.concurrent.CountDownLatch;
 class SerialCompute{
-    int[] arr = new int[1000];
-    int totalSum = 0;
+    int[] arr = new int[10000000];
+    long totalSum = 0;
     SerialCompute(){
-        for(int i=0;i<1000;i++){
+        for(int i=0;i<10000000;i++){
             arr[i] = i + 1;
         }
     }
     public void computeSum(){
-        for(int x:arr){
-            totalSum += x;
+        for(int i=0;i<10000000;i++){
+            totalSum += arr[i];
         }
     }
-    public int getSum(){
+    public long getSum(){
         return totalSum;
     }
 }
 
 class ParallelCompute{
     int[] arr;
-    int totalSum;
+    long totalSum;
     ReentrantLock l;
     ParallelCompute(){
-        arr = new int[1000];
-        for(int i=0;i<1000;i++){
+        arr = new int[10000000];
+        for(int i=0;i<10000000;i++){
             arr[i] = i + 1;
         }
         totalSum = 0;
@@ -39,7 +39,7 @@ class ParallelCompute{
         totalSum += localSum;
         l.unlock();
     }
-    public int getSum(){
+    public long getSum(){
         return totalSum;
     }
 }  
@@ -64,16 +64,15 @@ public class Question2 {
         SerialCompute sc = new SerialCompute();
         long startTimeSerial = System.nanoTime();
         sc.computeSum();
-        System.out.println("Total Sum : "+sc.getSum());
         long endTimeSerial = System.nanoTime();
         double serialTime = endTimeSerial - startTimeSerial;
         System.out.println("Serial Program Took :"+serialTime+"ns");
-        long times[] = new long[3];
+        long times[] = new long[7];
         int k = 0;
-        for(int i=2;i<=8;i=i*2){
+        for(int i=1;i<=64;i=i*2){
             ParallelCompute pc = new ParallelCompute();
             CountDownLatch countDownLatch = new CountDownLatch(i);
-            int chunks = 1000 / i;
+            int chunks = 10000000 / i;
             long startTimeParallel = System.nanoTime();
             for(int j=0;j<i;j++){
                 int startIdx = j * chunks;
@@ -84,7 +83,7 @@ public class Question2 {
             long endTimeParallel = System.nanoTime();
             times[k++] = endTimeParallel - startTimeParallel;
         }
-        int l = 2;
+        int l = 1;
         for(long time:times){
             System.out.printf("Time taken to execute the program with %d parallel compute units is: %d ns with speedup: %.2f\n",l,time,(serialTime / time));
             l = l * 2;

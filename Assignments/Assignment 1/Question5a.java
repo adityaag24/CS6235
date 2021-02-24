@@ -1,11 +1,7 @@
 class A{
     public synchronized void a1(B b){
         System.out.println("Hello from a1 in class A, executed by thread named "+Thread.currentThread().getName());
-        try{
-            Thread.sleep(1000);
-        }catch(InterruptedException e){
-            System.out.println(e.getStackTrace());
-        }
+        Thread.yield();
         b.bye();
     }
     public synchronized void bye(){
@@ -15,11 +11,7 @@ class A{
 class B{
     public synchronized void b1(A a){
         System.out.println("Hello from b1 in class B, executed by thread named "+Thread.currentThread().getName());
-        try{
-            Thread.sleep(1000);
-        }catch(InterruptedException e){
-            System.out.println(e.getStackTrace());
-        }
+        Thread.yield();
         a.bye();
     }
     public synchronized void bye(){
