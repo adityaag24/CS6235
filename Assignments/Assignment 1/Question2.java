@@ -67,9 +67,9 @@ public class Question2 {
         long endTimeSerial = System.nanoTime();
         double serialTime = endTimeSerial - startTimeSerial;
         System.out.println("Serial Program Took :"+serialTime+"ns");
-        long times[] = new long[7];
+        long times[] = new long[6];
         int k = 0;
-        for(int i=1;i<=64;i=i*2){
+        for(int i=2;i<=64;i=i*2){
             ParallelCompute pc = new ParallelCompute();
             CountDownLatch countDownLatch = new CountDownLatch(i);
             int chunks = 10000000 / i;
@@ -83,7 +83,7 @@ public class Question2 {
             long endTimeParallel = System.nanoTime();
             times[k++] = endTimeParallel - startTimeParallel;
         }
-        int l = 1;
+        int l = 2;
         for(long time:times){
             System.out.printf("Time taken to execute the program with %d parallel compute units is: %d ns with speedup: %.2f\n",l,time,(serialTime / time));
             l = l * 2;

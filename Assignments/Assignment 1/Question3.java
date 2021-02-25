@@ -1,4 +1,3 @@
-package WA;
 class Wisher{
     public void greet(String name){
         System.out.println("Hello there! "+name);
