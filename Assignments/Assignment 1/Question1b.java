@@ -8,78 +8,71 @@ class Game{
     int currAmount;
     double p,q;
     Game(){
-        currAmount = 100;
-        p = 0.4;
-        q = 1 - p;
+        currAmount = 100;//S1
+        p = 0.4;//S2
+        q = 1 - p;//S3
     }
     void printCurrentAmount(){
-        System.out.println("CurrentAmount: "+currAmount);
+        System.out.println("CurrentAmount: "+currAmount);//S4
     }
     int getAmount(){
-        int temp = 0;//S1
-        synchronized(this){//S2
-            temp = currAmount;//S3
+        int temp = 0;//S5
+        synchronized(this){//S6
+            temp = currAmount;//S7
         }
-        return temp;//S4
+        return temp;//S8
     }
     void incrementAmount(){
-        int temp = getAmount();//S5
-        temp = temp + 10;//S6
-        synchronized(this){//S7
-            currAmount = temp;//S8
+        int temp = getAmount();//S9
+        temp = temp + 10;//S10
+        synchronized(this){//S11
+            currAmount = temp;//S12
         }
     }
     void decrementAmount(){
-        int temp = getAmount();//S10
-        temp = temp - 10;
-        synchronized(this){//S11
-            currAmount = temp;//S17
+        int temp = getAmount();//S13
+        temp = temp - 10;//S14
+        synchronized(this){//S15
+            currAmount = temp;//S16
         }
     }
 }
 class GameRunner implements Runnable{
     Game g;
     GameRunner(Game g){
-        this.g = g;
+        this.g = g;//S17
     }
     public void run(){
         if(Thread.currentThread().getName().equalsIgnoreCase("Decrementer")){
-            g.decrementAmount();
+            g.decrementAmount();//S18
         }else{
-            g.incrementAmount();
+            g.incrementAmount();//S19
         }
     }
 }
 public class Question1b {
     public static void main(String[] args)throws InterruptedException{
-        System.out.println();
-        System.out.println("*********Welcome to the Game of Chance*********\n");
-        Game g = new Game();
-        double p;
-        int trueAmount = 100;
+        System.out.println();//S20
+        Game g = new Game();//S21
+        double p;//S22
+        int trueAmount = 100;//S23
         for(int i=0;i<10;i++){
             //Playing for 10 hours
-            p = Math.random();
+            p = Math.random();//S24
             if(g.p < p){
                 //He won
-                trueAmount += 10;
-                System.out.println("He won the current draw");
-                System.out.println("Expected/True Output\nCurrent Amount:"+trueAmount);
-                new Thread(new GameRunner(g),"Incrementer").start();
-                System.out.println("Thread Execution Output");
+                trueAmount += 10;//S25
+                System.out.println("Expected/True Output\nCurrent Amount:"+trueAmount);//S26
+                new Thread(new GameRunner(g),"Incrementer").start();//S27
             }else{
                 //He lost
-                trueAmount -= 10;
-                System.out.println("He lost the current draw");
-                System.out.println("Expected/True Output\nCurrent Amount:"+trueAmount);
-                new Thread(new GameRunner(g),"Decrementer").start();
-                System.out.println("Thread Execution Output");
+                trueAmount -= 10;//S28
+                System.out.println("Expected/True Output\nCurrent Amount:"+trueAmount);//S29
+                new Thread(new GameRunner(g),"Decrementer").start();//S30
             }
-            g.printCurrentAmount();
-            System.out.println();
-            Thread.sleep(2000);
+            System.out.println("Thread Execution Output");//S31
+            g.printCurrentAmount();//S32
+            System.out.println();//S33
         }
-        System.out.println("Final Expected Output: "+trueAmount);
-        System.out.println("Thread Execution Output: "+g.getAmount());
     }    
 }
