@@ -6,6 +6,7 @@ class input4 {
         A r2;
         A y;
         A x;
+        A z;
         bool checker;
         o1 = new A();
         o2 = new A();
@@ -19,10 +20,12 @@ class input4 {
             r2 = x;
         }
         x.f = y;
+        z = x.f;
         /*o1 alias? o2*/
         /*r1 alias? r2*/
         /*x alias? o1*/
         /*x alias? o2*/
+        /*z alias? y*/
         {}
     }    
 }
