@@ -9,8 +9,8 @@ class input1 {
         x = new X();
         y = new Y();
         checker = true;
-        r1 = x;
-        r2 = x;
+        r1 = null;
+        r2 = null;
         /* x alias? y*/
         if(checker){
             q = new X();
