@@ -23,13 +23,13 @@ public class QTACoJavaParser implements QTACoJavaParserConstants {
         break label_1;
       }
       n2 = TypeDeclaration();
-      n1.addNode(n2);
+        n1.addNode(n2);
     }
-    n1.nodes.trimToSize();
+     n1.nodes.trimToSize();
     n4 = jj_consume_token(0);
-    n4.beginColumn++; n4.endColumn++;
-    n3 = JTBToolkit.makeNodeToken(n4);
-    {if (true) return new Goal(n0,n1,n3);}
+      n4.beginColumn++; n4.endColumn++;
+      n3 = JTBToolkit.makeNodeToken(n4);
+     {if (true) return new Goal(n0,n1,n3);}
     throw new Error("Missing return statement in function");
   }
 

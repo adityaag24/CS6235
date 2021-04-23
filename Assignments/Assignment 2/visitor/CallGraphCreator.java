@@ -5,23 +5,36 @@
 package visitor;
 import syntaxtree.*;
 import java.util.*;
-
 /**
  * Provides default methods which visit each node in the tree in depth-first
  * order.  Your visitors may extend this class.
  */
-public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
+public class CallGraphCreator<R,A> implements GJVisitor<R,A> {
    //
    // Auto class visitors--probably don't need to be overridden.
    //
-   Map<String, LatticeEntry> stack;
-   Map<String, LatticeEntry> heap;
+   Map<String,CallGraphNode> callGraphNodes = new HashMap<String,CallGraphNode>();
+   ClassHierarchyGraph<String> classHierarchyGraph;
    Map<String,SymbolTable> symbolTable;
+   Map<String,ArrayList<String> > callGraph;
    int noRefs;
-   AliasAnalyzer(Map<String,SymbolTable> symbolTable,int noRefs){
+   public CallGraphCreator(ClassHierarchyGraph chGraph,Map<String,SymbolTable> symbolTable,int noRefs){
+      this.classHierarchyGraph = chGraph;
       this.symbolTable = symbolTable;
       this.noRefs = noRefs;
-      
+      this.callGraph = new HashMap<String,ArrayList<String> >();
+   }
+   public Map<String,ArrayList<String> > getCallGraph(){
+      return callGraph;
+   }
+   public Map<String,CallGraphNode> getCallGraphNodes(){
+      return callGraphNodes;
+   }
+   public void addNode(String key){
+      callGraph.put(key,new ArrayList<String>());
+   }
+   public void addEdge(String src,String dest){
+      callGraph.get(src).add(dest);
    }
    public R visit(NodeList n, A argu) {
       R _ret=null;
@@ -83,6 +96,107 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       return _ret;
    }
 
+   public void processQStatements(String key,NodeListOptional qStatements,FunctionTable fTable,SymbolTable sTable,String className,String functionName){
+      for(Enumeration<Node> e = qStatements.elements();e.hasMoreElements();){
+         QStatement qStmt = (QStatement)e.nextElement();
+         NodeListOptional queries = qStmt.f0;
+         for(Enumeration<Node> e1 = queries.elements();e1.hasMoreElements();){
+            Query q = (Query)e1.nextElement();
+            fTable.addQuery(getEntry(fTable,sTable,q.f1.f0.toString()),getEntry(fTable,sTable,q.f3.f0.toString()));
+         }
+         Statement stmt = (Statement)qStmt.f1;
+         String classStmt = stmt.f0.choice.getClass().getSimpleName();
+         if(classStmt.equals("AssignmentStatement")){
+            AssignmentStatement assStmt = (AssignmentStatement)stmt.f0.choice;
+            Expression exp = assStmt.f2;
+            String classExp = exp.f0.choice.getClass().getSimpleName();
+            if(classExp.equals("MessageSend")){
+               MessageSend msgSend = (MessageSend)exp.f0.choice;
+               PrimaryExpression prExpr = msgSend.f0;
+               String funcName = msgSend.f2.f0.toString();
+               String classPrExpr = prExpr.f0.choice.getClass().getSimpleName();
+               if(classPrExpr.equals("Identifier")){
+                  Identifier idt = (Identifier)prExpr.f0.choice;
+                  SymbolTableEntry entry = getEntry(fTable,sTable,idt.f0.toString());
+                  String className1 = entry.getClassName();
+                  if(symbolTable.get(className1).getFunctionTables().containsKey(funcName)){
+                     String key1 = className1 + ":" +funcName;
+                     CallGraphNode node = new CallGraphNode(className1,funcName,noRefs,symbolTable.get(className1));
+                     callGraphNodes.put(key1,node);
+                     addNode(key1);
+                     addEdge(key,key1);
+                  }else{
+                     String parentClassFinder = className1;
+                     while(!parentClassFinder.equals(classHierarchyGraph.getParent(parentClassFinder))){
+                        String parentClass = classHierarchyGraph.getParent(parentClassFinder);
+                        if(symbolTable.get(parentClass).getFunctionTables().containsKey(funcName)){
+                           String key1 = parentClass + ":" +funcName;
+                           CallGraphNode node = new CallGraphNode(parentClass,funcName,noRefs,symbolTable.get(parentClass));
+                           callGraphNodes.put(key1,node);
+                           addNode(key1);
+                           addEdge(key,key1);
+                           break;
+                        }else{
+                           parentClassFinder = classHierarchyGraph.getParent(parentClassFinder);
+                        }
+                     }
+                  }
+                  subClassPopulator(className1,key,funcName);
+               }else if(classPrExpr.equals("ThisExpression")){
+                  String className1 = key.split(":")[0];
+                  if(symbolTable.get(className1).getFunctionTables().containsKey(funcName)){
+                     String key1 = className1 + ":" +funcName;
+                     CallGraphNode node = new CallGraphNode(className1,funcName,noRefs,symbolTable.get(className1));
+                     callGraphNodes.put(key1,node);
+                     addNode(key1);
+                     addEdge(key,key1);
+                  }else{
+                     String parentClassFinder = className1;
+                     while(!parentClassFinder.equals(classHierarchyGraph.getParent(parentClassFinder))){
+                        String parentClass = classHierarchyGraph.getParent(parentClassFinder);
+                        if(symbolTable.get(parentClass).getFunctionTables().containsKey(funcName)){
+                           String key1 = parentClass + ":" +funcName;
+                           CallGraphNode node = new CallGraphNode(parentClass,funcName,noRefs,symbolTable.get(parentClass));
+                           callGraphNodes.put(key1,node);
+                           addNode(key1);
+                           addEdge(key,key1);
+                           break;
+                        }else{
+                           parentClassFinder = classHierarchyGraph.getParent(parentClassFinder);
+                        }
+                     }
+                  }
+               }else if(classPrExpr.equals("AllocationExpression")){
+                  AllocationExpression allocExpr = (AllocationExpression)exp.f0.choice;
+                  SymbolTableEntry entry = getEntry(fTable,sTable,allocExpr.f1.toString());
+                  String className1 = entry.getClassName();
+                  if(symbolTable.get(className1).getFunctionTables().containsKey(funcName)){
+                     String key1 = className1 + ":" +funcName;
+                     CallGraphNode node = new CallGraphNode(className1,funcName,noRefs,symbolTable.get(className1));
+                     callGraphNodes.put(key1,node);
+                     addNode(key1);
+                     addEdge(key,key1);
+                  }else{
+                     String parentClassFinder = className1;
+                     while(!parentClassFinder.equals(classHierarchyGraph.getParent(parentClassFinder))){
+                        String parentClass = classHierarchyGraph.getParent(parentClassFinder);
+                        if(symbolTable.get(parentClass).getFunctionTables().containsKey(funcName)){
+                           String key1 = parentClass + ":" +funcName;
+                           CallGraphNode node = new CallGraphNode(parentClass,funcName,noRefs,symbolTable.get(parentClass));
+                           callGraphNodes.put(key1,node);
+                           addNode(key1);
+                           addEdge(key,key1);
+                           break;
+                        }else{
+                           parentClassFinder = classHierarchyGraph.getParent(parentClassFinder);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
    /**
     * f0 -> "class"
     * f1 -> Identifier()
@@ -123,7 +237,48 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f15.accept(this, argu);
       n.f16.accept(this, argu);
       n.f17.accept(this, argu);
+      String className = n.f1.f0.toString();
+      String functionName = "main";
+      SymbolTable sTable = symbolTable.get(className);
+      FunctionTable fTable = sTable.getFunctionTables().get(functionName);
+      CallGraphNode rootNode = new CallGraphNode(className,functionName,noRefs,sTable);
+      rootNode.setThisPtr(new LatticeEntry(noRefs));
+      String key = className + ":main";
+      callGraphNodes.put(key,rootNode);
+      addNode(key);
+      NodeListOptional qStatements = n.f15;
+      processQStatements(key,qStatements,fTable,sTable,className,functionName);
       return _ret;
+   }
+
+   public void subClassPopulator(String className,String key,String funcName){
+      if(classHierarchyGraph.getSubClasses(className) == null){
+         return;
+      }
+      if(classHierarchyGraph.getSubClasses(className).size()==0){
+         return;
+      }
+      for(String subClass:classHierarchyGraph.getSubClasses(className)){
+         if(symbolTable.get(subClass).getFunctionTables().containsKey(funcName)){
+            String key1 = subClass + ":" +funcName;
+            CallGraphNode node = new CallGraphNode(subClass,funcName,noRefs,symbolTable.get(subClass));
+            callGraphNodes.put(key1,node);
+            addNode(key1);
+            addEdge(key,key1);
+            subClassPopulator(subClass,key,funcName);
+         }
+      }
+   }
+   SymbolTableEntry getEntry(FunctionTable fTable,SymbolTable sTable,String identifierKey){
+      SymbolTableEntry entry;
+      if(fTable.getLocalVars().containsKey(identifierKey)){
+         entry = fTable.getLocalVars().get(identifierKey);
+      }else if(fTable.getArguements().containsKey(identifierKey)){
+         entry  = fTable.getArguements().get(identifierKey);
+      }else{
+         entry = sTable.getClassMembers().get(identifierKey);
+      }
+      return entry;
    }
 
    /**
@@ -152,6 +307,20 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f3.accept(this, argu);
       n.f4.accept(this, argu);
       n.f5.accept(this, argu);
+      String className = n.f1.f0.toString();
+      SymbolTable sTable = symbolTable.get(className);
+      NodeListOptional methodDeclarations = n.f4;
+      for(Enumeration<Node> e = methodDeclarations.elements();e.hasMoreElements();){
+         MethodDeclaration method = (MethodDeclaration)e.nextElement();
+         String funcName = method.f2.f0.toString();
+         String key = className + ":" + funcName;
+         FunctionTable fTable = sTable.getFunctionTables().get(funcName);
+         CallGraphNode node = new CallGraphNode(className,funcName,noRefs,sTable);
+         callGraphNodes.put(key,node);
+         addNode(key);
+         NodeListOptional qStatements = method.f8;
+         processQStatements(key,qStatements,fTable,sTable,className,funcName);
+      }
       return _ret;
    }
 
@@ -175,6 +344,20 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f5.accept(this, argu);
       n.f6.accept(this, argu);
       n.f7.accept(this, argu);
+      String className = n.f1.f0.toString();
+      SymbolTable sTable = symbolTable.get(className);
+      NodeListOptional methodDeclarations = n.f6;
+      for(Enumeration<Node> e = methodDeclarations.elements();e.hasMoreElements();){
+         MethodDeclaration method = (MethodDeclaration)e.nextElement();
+         String funcName = method.f2.f0.toString();
+         String key = className + ":" + funcName;
+         FunctionTable fTable = sTable.getFunctionTables().get(funcName);
+         CallGraphNode node = new CallGraphNode(className,funcName,noRefs,sTable);
+         callGraphNodes.put(key,node);
+         addNode(key);
+         NodeListOptional qStatements = method.f8;
+         processQStatements(key,qStatements,fTable,sTable,className,funcName);
+      }
       return _ret;
    }
 

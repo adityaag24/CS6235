@@ -10,18 +10,25 @@ import java.util.*;
  * Provides default methods which visit each node in the tree in depth-first
  * order.  Your visitors may extend this class.
  */
-public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
+public class SymbolTableBuilder<R,A> implements GJVisitor<R,A> {
    //
    // Auto class visitors--probably don't need to be overridden.
    //
-   Map<String, LatticeEntry> stack;
-   Map<String, LatticeEntry> heap;
-   Map<String,SymbolTable> symbolTable;
+   ClassHierarchyGraph<String> classHierarchyGraph = new ClassHierarchyGraph<String>();
+   Map<String,SymbolTable> symbolTable = new HashMap<String,SymbolTable>();
+   SymbolTable root;
    int noRefs;
-   AliasAnalyzer(Map<String,SymbolTable> symbolTable,int noRefs){
-      this.symbolTable = symbolTable;
-      this.noRefs = noRefs;
-      
+   public SymbolTable getRoot(){
+      return root;
+   }
+   public int getRefs(){
+      return noRefs;
+   }
+   public ClassHierarchyGraph<String> getCHG(){
+      return classHierarchyGraph;
+   }
+   public Map<String,SymbolTable> getSymbolTable(){
+      return symbolTable;
    }
    public R visit(NodeList n, A argu) {
       R _ret=null;
@@ -123,6 +130,46 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f15.accept(this, argu);
       n.f16.accept(this, argu);
       n.f17.accept(this, argu);
+      SymbolTable sTable = new SymbolTable(n.f1.f0);
+      String name1 = "main";
+      String type1 = "method";
+      String className1 = n.f1.f0.toString();
+      NodeToken token1 = null;
+      Object returnValue1 = null;
+      classHierarchyGraph.addClass(n.f1.f0.toString());
+      FunctionTable fTable = new FunctionTable(name1,type1,className1,token1,returnValue1);
+      ArrayList<String> args = new ArrayList<String>();
+      SymbolTableEntry param1 = new SymbolTableEntry(n.f11.f0,"String",n.f1.f0.toString(),args,false,"formalParam");  
+      fTable.addArguement(param1);
+      for ( Enumeration<Node> e = n.f14.elements(); e.hasMoreElements(); ) {
+         VarDeclaration nextNode = (VarDeclaration)e.nextElement();
+         NodeToken token = nextNode.f1.f0;
+         String type = nextNode.f0.f0.choice.getClass().getSimpleName();
+         String className;
+         Object value;
+         if(type.equals("ArrayType")){
+            className = "IntegerArray";
+            value = new ArrayList<Integer>();
+         }else if(type.equals("BooleanType")){
+            className = "Boolean";
+            value = new Boolean(false);
+         }else if(type.equals("IntegerType")){
+            className = "Integer";
+            value = new Integer(0);
+         }else{
+            Identifier idt = (Identifier)nextNode.f0.f0.choice;
+            className = idt.f0.toString();
+            value = null;
+         }
+         SymbolTableEntry entry = new SymbolTableEntry(token,type,className,value,false,"localVar");
+         fTable.addLocalVar(entry);
+      }
+      NodeListOptional qStatements = n.f15;
+      if(qStatements.present())
+         fTable.setQStatements(qStatements);
+      sTable.addFunctionTable(fTable);
+      symbolTable.put(sTable.getKey(),sTable);
+      root = sTable;
       return _ret;
    }
 
@@ -136,6 +183,162 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       return _ret;
    }
 
+   SymbolTableEntry getEntry(FunctionTable fTable,SymbolTable sTable,String identifierKey){
+      SymbolTableEntry entry;
+      if(fTable.getLocalVars().containsKey(identifierKey)){
+         entry = fTable.getLocalVars().get(identifierKey);
+      }else if(fTable.getArguements().containsKey(identifierKey)){
+         entry  = fTable.getArguements().get(identifierKey);
+      }else{
+         entry = sTable.getClassMembers().get(identifierKey);
+      }
+      return entry;
+   }
+
+   SymbolTableEntry processFormalParameter(FormalParameter fParam,MethodDeclaration method){
+      NodeToken token = fParam.f1.f0;
+      String type = fParam.f0.f0.choice.getClass().getSimpleName();
+      String className;
+      Object value;
+      if(type.equals("ArrayType")){
+         className = "IntegerArray";
+         value = new ArrayList<Integer>();
+      }else if(type.equals("BooleanType")){
+         className = "Boolean";
+         value = new Boolean(false);
+      }else if(type.equals("IntegerType")){
+         className = "Integer";
+         value = new Integer(0);
+      }else{
+         Identifier idt = (Identifier)fParam.f0.f0.choice;
+         className = idt.f0.toString();
+         value = null;
+      }
+      SymbolTableEntry entry = new SymbolTableEntry(token,type,className,value,false,"formalParam");
+      return entry;
+   }
+
+   ArrayList<SymbolTableEntry> processParameters(NodeOptional params,MethodDeclaration method){
+      ArrayList<SymbolTableEntry> listParams = new ArrayList<SymbolTableEntry>();
+      FormalParameterList formalParamList = (FormalParameterList)params.node;
+      SymbolTableEntry entry = processFormalParameter(formalParamList.f0,method);
+      NodeListOptional otherParams = (NodeListOptional)formalParamList.f1;
+      listParams.add(entry);
+      for ( Enumeration<Node> e = otherParams.elements(); e.hasMoreElements(); ) {
+         FormalParameterRest fParamRest= (FormalParameterRest)e.nextElement();
+         FormalParameter fParam = (FormalParameter)fParamRest.f1;
+         SymbolTableEntry entry1 = processFormalParameter(fParam,method);
+         listParams.add(entry1);
+      }
+      return listParams;
+   }
+
+  ArrayList<SymbolTableEntry> processLocalVars(NodeListOptional lVars,MethodDeclaration method){
+      ArrayList<SymbolTableEntry> localVars = new ArrayList<SymbolTableEntry>();
+      for ( Enumeration<Node> e = lVars.elements(); e.hasMoreElements(); ) {
+         VarDeclaration nextNode = (VarDeclaration)e.nextElement();
+         NodeToken token = nextNode.f1.f0;
+         String type = nextNode.f0.f0.choice.getClass().getSimpleName();
+         String className;
+         Object value;
+         if(type.equals("ArrayType")){
+            className = "IntegerArray";
+            value = new ArrayList<Integer>();
+         }else if(type.equals("BooleanType")){
+            className = "Boolean";
+            value = new Boolean(false);
+         }else if(type.equals("IntegerType")){
+            className = "Integer";
+            value = new Integer(0);
+         }else{
+            Identifier idt = (Identifier)nextNode.f0.f0.choice;
+            className = idt.f0.toString();
+            value = null;
+         }
+         SymbolTableEntry entry = new SymbolTableEntry(token,type,className,value,false,"localVar");
+         localVars.add(entry);
+      }
+      return localVars;
+   }
+
+   SymbolTable makeSymbolTable(NodeToken cls, NodeListOptional classMembers, NodeListOptional functions){
+      SymbolTable sTable = new SymbolTable(cls);
+      if(classMembers.present()){
+         for ( Enumeration<Node> e = classMembers.elements(); e.hasMoreElements(); ) {
+            VarDeclaration nextNode = (VarDeclaration)e.nextElement();
+            NodeToken token = nextNode.f1.f0;
+            String type = nextNode.f0.f0.choice.getClass().getSimpleName();
+            String className;
+            Object value;
+            if(type.equals("ArrayType")){
+               className = "IntegerArray";
+               value = new ArrayList<Integer>();
+            }else if(type.equals("BooleanType")){
+               className = "Boolean";
+               value = new Boolean(false);
+            }else if(type.equals("IntegerType")){
+               className = "Integer";
+               value = new Integer(0);
+            }else{
+               Identifier idt = (Identifier)nextNode.f0.f0.choice;
+               className = idt.f0.toString();
+               value = null;
+            }
+            SymbolTableEntry entry = new SymbolTableEntry(token,type,className,value,false,"classMember");
+            sTable.addClassMember(entry);
+         }
+      }
+      if(functions.present()){
+         for (Enumeration<Node> e =  functions.elements();e.hasMoreElements();){
+            MethodDeclaration nextNode = (MethodDeclaration)e.nextElement();
+            String name = nextNode.f2.f0.toString();
+            String type = nextNode.f1.f0.choice.getClass().getSimpleName();;
+            String className;
+            if(type.equals("ArrayType")){
+               className = "IntegerArray";
+            }else if(type.equals("BooleanType")){
+               className = "Boolean";
+            }else if(type.equals("IntegerType")){
+               className = "Integer";
+            }else{
+               Identifier idt = (Identifier)nextNode.f1.f0.choice;
+               className = idt.f0.toString();
+            }
+            NodeToken token = nextNode.f2.f0;
+            Object returnValue;
+            if(type.equals("BooleanType")){
+               returnValue = new Boolean(false);
+            }else if(type.equals("IntegerType")){
+               returnValue = new Integer(0);
+            }else if(type.equals("ArrayType")){
+               returnValue = new ArrayList<Integer>();
+            }else{
+               Identifier idt = (Identifier)nextNode.f1.f0.choice;
+               className = idt.f0.toString();
+               returnValue = null;
+            }
+            FunctionTable fTable = new FunctionTable(name,type,className,token,returnValue);
+            if(nextNode.f4.node!=null){
+               ArrayList<SymbolTableEntry> parameters = processParameters(nextNode.f4,nextNode);
+               for(SymbolTableEntry entry:parameters){
+                  fTable.addArguement(entry);
+               }
+            }
+            NodeListOptional varDeclarations = nextNode.f7;
+            if(varDeclarations!=null){
+               ArrayList<SymbolTableEntry> localVars = processLocalVars(nextNode.f7,nextNode);
+               for(SymbolTableEntry entry:localVars){
+                  fTable.addLocalVar(entry);
+               }
+            }
+            NodeListOptional qStatements = nextNode.f8;
+            if(qStatements.present())
+               fTable.setQStatements(qStatements);
+            sTable.addFunctionTable(fTable);
+         }
+      }
+      return sTable;
+   }
    /**
     * f0 -> "class"
     * f1 -> Identifier()
@@ -152,6 +355,9 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f3.accept(this, argu);
       n.f4.accept(this, argu);
       n.f5.accept(this, argu);
+      classHierarchyGraph.addClass(n.f1.f0.toString());
+      SymbolTable sTable = makeSymbolTable(n.f1.f0,n.f3,n.f4);
+      symbolTable.put(sTable.getKey(),sTable);
       return _ret;
    }
 
@@ -175,6 +381,9 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f5.accept(this, argu);
       n.f6.accept(this, argu);
       n.f7.accept(this, argu);
+      classHierarchyGraph.addEdge(n.f3.f0.toString(),n.f1.f0.toString());
+      SymbolTable sTable = makeSymbolTable(n.f1.f0,n.f5,n.f6);
+      symbolTable.put(sTable.getKey(),sTable);
       return _ret;
    }
 
@@ -721,6 +930,7 @@ public class AliasAnalyzer<R,A> implements GJVisitor<R,A> {
       n.f1.accept(this, argu);
       n.f2.accept(this, argu);
       n.f3.accept(this, argu);
+      noRefs++;
       return _ret;
    }
 
