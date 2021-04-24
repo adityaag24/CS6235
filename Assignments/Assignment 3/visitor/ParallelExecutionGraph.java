@@ -10,13 +10,13 @@ import java.util.*;
  * Provides default methods which visit each node in the tree in depth-first
  * order.  Your visitors may extend this class.
  */
-public class SymbolTableBuilder<R,A> implements GJVisitor<R,A> {
+public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
    //
    // Auto class visitors--probably don't need to be overridden.
    //
-   Map<String, SymbolTable> symbolTable = new HashMap<String,SymbolTable>();
-   public Map<String, SymbolTable> getSymbolTable(){
-       return symbolTable;
+   Map<String,SymbolTable> symbolTable;
+   ParallelExecutionGraph(Map<String,SymbolTable> symbolTable){
+       this.symbolTable = symbolTable;
    }
    public R visit(NodeList n, A argu) {
       R _ret=null;
@@ -140,34 +140,11 @@ public class SymbolTableBuilder<R,A> implements GJVisitor<R,A> {
       n.f25.accept(this, argu);
       n.f26.accept(this, argu);
       n.f27.accept(this, argu);
-      Identifier className = n.f1;
-      SymbolTable sTable = new SymbolTable(className.f0);
-      FunctionTable fTable = new FunctionTable("main","static",className.f0.toString(),null,null);
-      NodeListOptional varDeclarations = n.f16;
-      for(Enumeration e = varDeclarations.elements();e.hasMoreElements();){
-        VarDeclaration v = (VarDeclaration)e.nextElement();
-        Type t = v.f0;
-        Identifier idt = v.f1;
-        NodeToken token = idt.f0;
-        String type = t.f0.choice.getClass().getSimpleName();
-        String varClassName;
-        Object value;
-        if(type.equals("BooleanType")){
-            varClassName = "Boolean";
-            value = new Boolean(false);
-        }else if(type.equals("IntegerType")){
-            varClassName = "Integer";
-            value = new Integer(0);
-        }else{
-            Identifier varIdt = (Identifier)t.f0.choice;
-            varClassName = varIdt.f0.toString();
-            value = null;
-        }
-        SymbolTableEntry entry = new SymbolTableEntry(token,type,varClassName,value,"localVar");
-        fTable.addLocalVar(entry);
+      NodeListOptional qParStatements = n.f17;
+      for(Enumeration e = qParStatements.elements();e.hasMoreElements();){
+          QParStatement stmt = e.nextElement();
+          
       }
-      sTable.addFunctionTable(fTable);
-      symbolTable.put(className.f0.toString(),sTable);
       return _ret;
    }
 
@@ -195,32 +172,6 @@ public class SymbolTableBuilder<R,A> implements GJVisitor<R,A> {
       n.f2.accept(this, argu);
       n.f3.accept(this, argu);
       n.f4.accept(this, argu);
-      Identifier className = n.f1;
-      NodeListOptional nListOpt = n.f3;
-      SymbolTable sTable = new SymbolTable(className.f0);
-      for(Enumeration e = nListOpt.elements();e.hasMoreElements();){
-         VarDeclaration v = (VarDeclaration)e.nextElement();
-         Type t = v.f0;
-         Identifier idt = v.f1;
-         NodeToken token = idt.f0;
-         String type = t.f0.choice.getClass().getSimpleName();
-         String varClassName;
-         Object value;
-         if(type.equals("BooleanType")){
-               varClassName = "Boolean";
-               value = new Boolean(false);
-         }else if(type.equals("IntegerType")){
-               varClassName = "Integer";
-               value = new Integer(0);
-         }else{
-               Identifier varIdt = (Identifier)t.f0.choice;
-               varClassName = varIdt.f0.toString();
-               value = null;
-         }
-         SymbolTableEntry entry = new SymbolTableEntry(token,type,varClassName,value,"localVar");
-         sTable.addClassMember(entry);
-      }
-      symbolTable.put(className.f0.toString(),sTable);
       return _ret;
    }
 
@@ -244,62 +195,6 @@ public class SymbolTableBuilder<R,A> implements GJVisitor<R,A> {
       n.f5.accept(this, argu);
       n.f6.accept(this, argu);
       n.f7.accept(this, argu);
-      Identifier className = n.f1;
-      NodeListOptional nListOpt = n.f5;
-      SymbolTable sTable = new SymbolTable(className.f0);
-      for(Enumeration e = nListOpt.elements();e.hasMoreElements();){
-         VarDeclaration v = (VarDeclaration)e.nextElement();
-         Type t = v.f0;
-         Identifier idt = v.f1;
-         NodeToken token = idt.f0;
-         String type = t.f0.choice.getClass().getSimpleName();
-         String varClassName;
-         Object value;
-         if(type.equals("BooleanType")){
-               varClassName = "Boolean";
-               value = new Boolean(false);
-         }else if(type.equals("IntegerType")){
-               varClassName = "Integer";
-               value = new Integer(0);
-         }else{
-               Identifier varIdt = (Identifier)t.f0.choice;
-               varClassName = varIdt.f0.toString();
-               value = null;
-         }
-         SymbolTableEntry entry = new SymbolTableEntry(token,type,varClassName,value,"localVar");
-         sTable.addClassMember(entry);
-      }
-      NodeListOptional methodDeclarations = n.f6;
-      for(Enumeration e = methodDeclarations.elements();e.hasMoreElements();){
-         MethodDeclaration method = (MethodDeclaration)e.nextElement();
-         FunctionTable fTable = new FunctionTable("run","instance",className.f0.toString(),null,null);
-         NodeListOptional varDeclarations = method.f8;
-         for(Enumeration e1 = varDeclarations.elements();e1.hasMoreElements();){
-            VarDeclaration v = (VarDeclaration)e1.nextElement();
-            Type t = v.f0;
-            Identifier idt = v.f1;
-            NodeToken token = idt.f0;
-            String type = t.f0.choice.getClass().getSimpleName();
-            String varClassName;
-            Object value;
-            if(type.equals("BooleanType")){
-                  varClassName = "Boolean";
-                  value = new Boolean(false);
-            }else if(type.equals("IntegerType")){
-                  varClassName = "Integer";
-                  value = new Integer(0);
-            }else{
-                  Identifier varIdt = (Identifier)t.f0.choice;
-                  type = varIdt.f0.toString();
-                  varClassName = varIdt.f0.toString();
-                  value = null;
-            }
-            SymbolTableEntry entry = new SymbolTableEntry(token,type,varClassName,value,"localVar");
-            fTable.addLocalVar(entry);
-         }
-         sTable.addFunctionTable(fTable);
-      }
-      symbolTable.put(className.f0.toString(),sTable);
       return _ret;
    }
 
