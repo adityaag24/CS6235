@@ -27,6 +27,7 @@ public class Main {
             }*/
             Map<String,ArrayList<PEGNode> > PEG = builder.getPEG();
             for(String functionName:PEG.keySet()){
+                System.out.println("For "+functionName+" function");
                 ArrayList<PEGNode> pegNodes = PEG.get(functionName);
                 for(PEGNode pegNode:pegNodes){
                     pegNode.print();
