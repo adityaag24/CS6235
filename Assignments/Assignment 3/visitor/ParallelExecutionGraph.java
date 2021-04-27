@@ -280,7 +280,20 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          NodeListOptional qParStmts = blk.f1;
          for(Enumeration e = qParStmts.elements();e.hasMoreElements();){
             QParStatement qParStmt = (QParStatement)e.nextElement();
+            NodeListOptional ann = qParStmt.f0;
+            String strAnnotatedLabel = null;
+            if(ann.present()){
+               for(Enumeration annotation = ann.elements();annotation.hasMoreElements();){
+                  Ann annotated = (Ann)annotation.nextElement();
+                  Label annotatedLabel = annotated.f1;
+                  Identifier idt = annotatedLabel.f0;
+                  strAnnotatedLabel = idt.f0.toString(); 
+               }
+            }  
+            String temp = annotation;
+            annotation = strAnnotatedLabel;
             handleStatement(functionName,qParStmt.f1,sTable,fTable,threadName,isSync,annotation);
+            annotation = temp;
          }
       }else if(classOfStmt.equals("FieldAssignmentStatement")){
          FieldAssignmentStatement fAssignment = (FieldAssignmentStatement)stmt.f0.choice;
@@ -297,13 +310,20 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          IfStatement ifStmt = (IfStatement)stmt.f0.choice;
          Identifier predicateIdentifier = ifStmt.f2;
          PEGNode predicateNode = new PEGNode(nodeCounter,predicateIdentifier.f0.toString(),"predicate",threadName,isSync,annotation);
+         nodeCounter++;
          PEG.get(functionName).add(predicateNode);
          Statement trueStmt = ifStmt.f4;
          Statement falseStmt = ifStmt.f6;
          handleStatement(functionName,trueStmt,sTable,fTable,threadName,isSync,annotation);
          handleStatement(functionName,falseStmt,sTable,fTable,threadName,isSync,annotation);
       }else if(classOfStmt.equals("WhileStatement")){
-
+         WhileStatement whileStmt = (WhileStatement)stmt.f0.choice;
+         Identifier whileIdentifier = whileStmt.f2;
+         PEGNode whileNode = new PEGNode(nodeCounter,whileIdentifier.f0.toString(),"while",threadName,isSync,annotation);
+         nodeCounter++;
+         PEG.get(functionName).add(whileNode);
+         Statement whileStmt = whileStmt.f4;
+         handleStatement(functionName,whileStmt,sTable,fTable,threadName,isSync,annotation);
       }else if(classOfStmt.equals("MessageSend")){
          MessageSend messageSend = (MessageSend)stmt.f0.choice;
          String classMessageSend = messageSend.f0.choice.getClass().getSimpleName();
