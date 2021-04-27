@@ -43,9 +43,8 @@ public class SymbolTableEntry {
         this.value = value;
     }
     public void printEntry(){
-        System.out.println();
-        System.out.println(type+" "+name);
-        System.out.println(className);
-        System.out.println();
+        System.out.println(className+" "+name);
+        System.out.println("Type: "+type);
+        System.out.println("Value: "+value);
     }
 }

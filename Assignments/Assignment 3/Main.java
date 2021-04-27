@@ -11,7 +11,8 @@ public class Main {
             root.accept(sTableBuilder, null);
             System.out.println("Symbol Table Built.");
             ParallelExecutionGraph builder = new ParallelExecutionGraph(sTableBuilder.getSymbolTable());
-            /*Map<String,SymbolTable> symbolTable = sTableBuilder.getSymbolTable();
+            root.accept(builder,null);
+            /*Map<String,SymbolTable> symbolTable = builder.getSymbolTable();
             for(String className : symbolTable.keySet()){
                 System.out.println("Class Name : "+className);
                 System.out.println("The class has "+symbolTable.get(className).getClassMembers().size()+ " number of class Members.");
@@ -24,6 +25,13 @@ public class Main {
                     fTable.printTable();
                 }
             }*/
+            Map<String,ArrayList<PEGNode> > PEG = builder.getPEG();
+            for(String functionName:PEG.keySet()){
+                ArrayList<PEGNode> pegNodes = PEG.get(functionName);
+                for(PEGNode pegNode:pegNodes){
+                    pegNode.print();
+                }
+            }
             //GJDepthFirst v = new GJDepthFirst();
             //root.accept(v, null);
             

@@ -5,6 +5,7 @@ class input3 {
             B b;
             A temp;
             int x;
+            a = new A();
             b = new B();
             /* S0 : */ b.f0 = a;
             b.start();
