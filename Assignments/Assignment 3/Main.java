@@ -35,7 +35,7 @@ public class Main {
                     FunctionTable fTable = symbolTable.get(className).getFunctionTables().get(function);
                     fTable.printTable();
                 }
-            }*/
+            }
             System.out.println("Printing Monitor Nodes");
             Map<ObjectInfo,ArrayList<PEGNode> > monitorNodes = builder.getMonitorNodes();
             for(ObjectInfo oInfo:monitorNodes.keySet()){
@@ -50,6 +50,14 @@ public class Main {
                 System.out.println("Object : "+oInfo+" Name : "+oInfo.getName());
                 for(PEGNode wNode : waitingNodes.get(oInfo)){
                     wNode.print();
+                }
+            }*/
+            System.out.println("Printing PEG");
+            Map<String,ArrayList<PEGNode>> PEG = builder.getPEG();
+            for(String key:PEG.keySet()){
+                System.out.println("Printing for "+key);
+                for(PEGNode pNode:PEG.get(key)){
+                    pNode.print();
                 }
             }
             //GJDepthFirst v = new GJDepthFirst();

@@ -221,7 +221,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
       if(!secondPass){
          nodeCounter++;
          PEG.put(key,new ArrayList<PEGNode>());
-         PEGNode beginNode = new PEGNode(nodeCounter,"main","begin","main",false,null);
+         PEGNode beginNode = new PEGNode(nodeCounter,"main","begin","main",false,null,false,false,false);
          nodeCounter++;
          PEG.get(key).add(beginNode);
          boolean isSync = false;
@@ -238,7 +238,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
                }
             }  
             Statement stmt = qParStmt.f1;
-            handleStatement(key,stmt,sTable,fTable,"main",isSync,strAnnotatedLabel);
+            handleStatement(key,stmt,sTable,fTable,"main",isSync,strAnnotatedLabel,false,false,false);
          }
       }else{
          if(key.equals(className+":main")){
@@ -328,7 +328,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
       }
       return returnValue;
    }
-   public void handleStatement(String key,Statement stmt,SymbolTable sTable,FunctionTable fTable,String threadName,boolean isSync,String annotation){      
+   public void handleStatement(String key,Statement stmt,SymbolTable sTable,FunctionTable fTable,String threadName,boolean isSync,String annotation,boolean inTrueBlock,boolean inFalseBlock,boolean inWhileBlock){      
       String classOfStmt = stmt.f0.choice.getClass().getSimpleName();
       if(classOfStmt.equals("AssignmentStatement")){
          AssignmentStatement assignmentStmt = (AssignmentStatement)stmt.f0.choice;
@@ -338,7 +338,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          Object value = evaluateExpression(classExpr,expr,sTable,fTable);
          SymbolTableEntry lhsSTE = getEntry(lhsIdentifier.f0.toString(),sTable,fTable);
          lhsSTE.setValue(value);
-         PEGNode computeNode = new PEGNode(nodeCounter,lhsSTE.getName(),"compute",threadName,isSync,annotation);
+         PEGNode computeNode = new PEGNode(nodeCounter,lhsSTE.getName(),"compute",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
          nodeCounter++;
          PEG.get(key).add(computeNode);
       }else if(classOfStmt.equals("Block")){
@@ -358,7 +358,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
             }  
             String temp = annotation;
             annotation = strAnnotatedLabel;
-            handleStatement(key,qParStmt.f1,sTable,fTable,threadName,isSync,annotation);
+            handleStatement(key,qParStmt.f1,sTable,fTable,threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             annotation = temp;
          }
       }else if(classOfStmt.equals("FieldAssignmentStatement")){
@@ -370,76 +370,81 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          SymbolTableEntry rhsObjectEntry = getEntry(rhsObject.f0.toString(),sTable,fTable);
          ObjectInfo lhsObjectInfo = (ObjectInfo)lhsObjectEntry.getValue();
          lhsObjectInfo.setField(fieldOfObject.f0.toString(),rhsObjectEntry.getValue());
-         PEGNode fieldAssignmentNode = new PEGNode(nodeCounter,lhsObjectEntry.getName(),"compute",threadName,isSync,annotation);
+         PEGNode fieldAssignmentNode = new PEGNode(nodeCounter,lhsObjectEntry.getName(),"compute",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
          nodeCounter++;
          PEG.get(key).add(fieldAssignmentNode);
       }else if(classOfStmt.equals("IfStatement")){
          IfStatement ifStmt = (IfStatement)stmt.f0.choice;
          Identifier predicateIdentifier = ifStmt.f2;
-         PEGNode predicateNode = new PEGNode(nodeCounter,predicateIdentifier.f0.toString(),"predicate",threadName,isSync,annotation);
+         PEGNode predicateNode = new PEGNode(nodeCounter,predicateIdentifier.f0.toString(),"predicate",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
          nodeCounter++;
          PEG.get(key).add(predicateNode);
          Statement trueStmt = ifStmt.f4;
          Statement falseStmt = ifStmt.f6;
-         handleStatement(key,trueStmt,sTable,fTable,threadName,isSync,annotation);
-         handleStatement(key,falseStmt,sTable,fTable,threadName,isSync,annotation);
+         inTrueBlock = true; inFalseBlock = false;
+         handleStatement(key,trueStmt,sTable,fTable,threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
+         inTrueBlock = false; inFalseBlock = true;
+         handleStatement(key,falseStmt,sTable,fTable,threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
+         inTrueBlock = true; inFalseBlock = false;
       }else if(classOfStmt.equals("WhileStatement")){
          WhileStatement whileStmt = (WhileStatement)stmt.f0.choice;
          Identifier whileIdentifier = whileStmt.f2;
-         PEGNode whileNode = new PEGNode(nodeCounter,whileIdentifier.f0.toString(),"while",threadName,isSync,annotation);
+         PEGNode whileNode = new PEGNode(nodeCounter,whileIdentifier.f0.toString(),"while",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
          nodeCounter++;
          PEG.get(key).add(whileNode);
          Statement whileStmt1 = whileStmt.f4;
-         handleStatement(key,whileStmt1,sTable,fTable,threadName,isSync,annotation);
+         inWhileBlock = true;
+         handleStatement(key,whileStmt1,sTable,fTable,threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
+         inWhileBlock = false;
       }else if(classOfStmt.equals("MessageSend")){
          MessageSend messageSend = (MessageSend)stmt.f0.choice;
          String classMessageSend = messageSend.f0.choice.getClass().getSimpleName();
          if(classMessageSend.equals("callStartMethod")){
             callStartMethod startMethod = (callStartMethod)messageSend.f0.choice;
-            PEGNode startNode = new PEGNode(nodeCounter,startMethod.f0.f0.toString(),"start",threadName,isSync,annotation);
+            PEGNode startNode = new PEGNode(nodeCounter,startMethod.f0.f0.toString(),"start",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
             PEG.get(key).add(startNode);
          }else if(classMessageSend.equals("callNotifyMethod")){
             callNotifyMethod notifyMethod = (callNotifyMethod)messageSend.f0.choice;
-            PEGNode notifyNode = new PEGNode(nodeCounter,notifyMethod.f0.f0.toString(),"notify",threadName,isSync,annotation);
+            PEGNode notifyNode = new PEGNode(nodeCounter,notifyMethod.f0.f0.toString(),"notify",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
             PEG.get(key).add(notifyNode);
          }else if(classMessageSend.equals("callNotifyAllMethod")){
             callNotifyAllMethod notifyAllMethod = (callNotifyAllMethod)messageSend.f0.choice;
-            PEGNode notifyAllNode = new PEGNode(nodeCounter,notifyAllMethod.f0.f0.toString(),"notifyAll",threadName,isSync,annotation);
+            PEGNode notifyAllNode = new PEGNode(nodeCounter,notifyAllMethod.f0.f0.toString(),"notifyAll",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
             PEG.get(key).add(notifyAllNode);
          }else if(classMessageSend.equals("callWaitMethod")){
             callWaitMethod waitMethod = (callWaitMethod)messageSend.f0.choice;
-            PEGNode waitNode = new PEGNode(nodeCounter,waitMethod.f0.f0.toString(),"wait",threadName,isSync,annotation);
+            PEGNode waitNode = new PEGNode(nodeCounter,waitMethod.f0.f0.toString(),"wait",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
-            PEGNode waitingNode = new PEGNode(nodeCounter,waitMethod.f0.f0.toString(),"waiting",threadName,isSync,annotation);
+            PEGNode waitingNode = new PEGNode(nodeCounter,waitMethod.f0.f0.toString(),"waiting",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
-            PEGNode notifiedEntryNode = new PEGNode(nodeCounter,waitMethod.f0.f0.toString(),"notified-entry",threadName,isSync,annotation);
+            PEGNode notifiedEntryNode = new PEGNode(nodeCounter,waitMethod.f0.f0.toString(),"notified-entry",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
             PEG.get(key).add(waitNode);
             PEG.get(key).add(waitingNode);
             PEG.get(key).add(notifiedEntryNode);
          }else{  
             callJoinMethod joinMethod = (callJoinMethod)messageSend.f0.choice;
-            PEGNode joinNode = new PEGNode(nodeCounter,joinMethod.f0.f0.toString(),"join",threadName,isSync,annotation);
+            PEGNode joinNode = new PEGNode(nodeCounter,joinMethod.f0.f0.toString(),"join",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
             nodeCounter++;
             PEG.get(key).add(joinNode);
          }
       }else if(classOfStmt.equals("PrintStatement")){
          PrintStatement printStmt = (PrintStatement)stmt.f0.choice;
-         PEGNode printNode = new PEGNode(nodeCounter,printStmt.f2.f0.toString(),"print",threadName,isSync,annotation);
+         PEGNode printNode = new PEGNode(nodeCounter,printStmt.f2.f0.toString(),"print",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
          nodeCounter++;
          PEG.get(key).add(printNode);
       }else if(classOfStmt.equals("SynchStatement")){
          SynchStatement syncStmt = (SynchStatement)stmt.f0.choice;
          Identifier lockObject = syncStmt.f2;
-         PEGNode entryNode = new PEGNode(nodeCounter,lockObject.f0.toString(),"entry",threadName,isSync,annotation); 
+         PEGNode entryNode = new PEGNode(nodeCounter,lockObject.f0.toString(),"entry",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock); 
          PEG.get(key).add(entryNode);
          isSync = true;
          Statement stmt1 = syncStmt.f4;
-         handleStatement(key,stmt1,sTable,fTable,threadName,isSync,annotation);
-         PEGNode exitNode = new PEGNode(nodeCounter,lockObject.f0.toString(),"exit",threadName,isSync,annotation);
+         handleStatement(key,stmt1,sTable,fTable,threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
+         PEGNode exitNode = new PEGNode(nodeCounter,lockObject.f0.toString(),"exit",threadName,isSync,annotation,inTrueBlock,inFalseBlock,inWhileBlock);
          isSync = false;
          PEG.get(key).add(exitNode);
       }
@@ -501,7 +506,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
             MethodDeclaration methodDecl = (MethodDeclaration)method.nextElement();
             String methodName = "run";
             FunctionTable fTable = symbolTable.get(className).getFunctionTables().get(methodName);
-            PEGNode beginNode = new PEGNode(nodeCounter,"this","begin","this",false,null);
+            PEGNode beginNode = new PEGNode(nodeCounter,"this","begin","this",false,null,false,false,false);
             PEG.get(key).add(beginNode);
             nodeCounter++;
             boolean isSync = false;
@@ -519,13 +524,12 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
                   }
                }  
                Statement stmt = qParStmt.f1;
-               handleStatement(key,stmt,sTable,fTable,"this",isSync,strAnnotatedLabel);
+               handleStatement(key,stmt,sTable,fTable,"this",isSync,strAnnotatedLabel,false,false,false);
             }
          }
       }else{
 
       }
-      
       return _ret;
    }
 

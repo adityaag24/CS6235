@@ -1,4 +1,5 @@
 package visitor;
+import java.util.*;
 
 public class PEGNode {
     private int nodeNumber;
@@ -11,13 +12,26 @@ public class PEGNode {
     ArrayList<PEGNode> localSucc = new ArrayList<PEGNode>();
     PEGNode startPred,startSucc;
     PEGNode waitingEdge;
-    PEGNode(int nodeNumber,String receiverObject,String typeOfNode,String threadName,boolean isSync,String annotatedLabel){
+    private boolean inTrueBlock,inFalseBlock,inWhileBlock;
+    PEGNode(int nodeNumber,String receiverObject,String typeOfNode,String threadName,boolean isSync,String annotatedLabel,boolean inTrueBlock,boolean inFalseBlock,boolean inWhileBlock){
         this.nodeNumber = nodeNumber;
         this.receiverObject = receiverObject;
         this.typeOfNode = typeOfNode;
         this.threadName = threadName;
         this.isInSyncBlock = isSync;
         this.annotatedLabel = annotatedLabel;
+        this.inTrueBlock = inTrueBlock;
+        this.inFalseBlock = inFalseBlock;
+        this.inWhileBlock = inWhileBlock;
+    }
+    public boolean getWhileBlock(){
+        return inWhileBlock;
+    }
+    public boolean getTrueBlock(){
+        return inTrueBlock;
+    }
+    public boolean getFalseBlock(){
+        return inFalseBlock;
     }
     public int getNodeNumber() {
         return this.nodeNumber;
@@ -60,6 +74,16 @@ public class PEGNode {
         System.out.println(this.nodeNumber + ": ("+this.receiverObject+","+this.typeOfNode+","+this.threadName+","+this.isInSyncBlock+")");
         if(this.annotatedLabel!=null){
             System.out.println(this.annotatedLabel);
+        }
+        System.out.println("Control Stats");
+        if(!inTrueBlock && !inFalseBlock){
+            System.out.println("Unconditional");
+        }else if(inTrueBlock && !inFalseBlock){
+            System.out.println("True");
+        }else if(!inTrueBlock && inFalseBlock){
+            System.out.println("False");
+        }else{
+            System.out.println("WTH");
         }
     }
 }
