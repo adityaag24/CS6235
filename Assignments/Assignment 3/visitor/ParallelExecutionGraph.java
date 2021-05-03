@@ -16,12 +16,25 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
    //
    int nodeCounter;
    int objCounter;
+   boolean secondPass;
    Map<String,ArrayList<PEGNode>> PEG = new HashMap<String,ArrayList<PEGNode>>();
+   Map<ObjectInfo,ArrayList<PEGNode>> waitingNodes = new HashMap<ObjectInfo,ArrayList<PEGNode>>();
+   Map<ObjectInfo,ArrayList<PEGNode>> monitorNodes = new HashMap<ObjectInfo,ArrayList<PEGNode>>();
    Map<String,SymbolTable> symbolTable;
-   public ParallelExecutionGraph(Map<String,SymbolTable> symbolTable){
+   public void setSecondPass(){
+      secondPass = true;
+   }
+   public Map<ObjectInfo, ArrayList<PEGNode>> getMonitorNodes(){
+      return monitorNodes;
+   }
+   public Map<ObjectInfo, ArrayList<PEGNode>> getWaitingNodes(){
+      return waitingNodes;
+   }
+   public ParallelExecutionGraph(Map<String,SymbolTable> symbolTable,boolean secondPass){
       this.symbolTable = symbolTable;
       this.nodeCounter = 0;   
       this.objCounter = 0;
+      this.secondPass = secondPass;
    }
 
    public Map<String,SymbolTable> getSymbolTable(){
@@ -157,32 +170,84 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
       String className = n.f1.f0.toString();
       SymbolTable sTable = symbolTable.get(className);
       FunctionTable fTable = symbolTable.get(className).getFunctionTables().get("main");
-      nodeCounter++;
-      String key = className+" :main";
-      PEG.put(key,new ArrayList<PEGNode>());
-      PEGNode beginNode = new PEGNode(nodeCounter,"main","begin","main",false,null);
-      PEG.get(key).add(beginNode);
-      boolean isSync = false;
-      for(Enumeration e = qParStatements.elements();e.hasMoreElements();){
-         QParStatement qParStmt = (QParStatement)e.nextElement();
-         NodeListOptional ann = qParStmt.f0;
-         String strAnnotatedLabel = null;
-         if(ann.present()){
-            for(Enumeration annotation = ann.elements();annotation.hasMoreElements();){
-               Ann annotated = (Ann)annotation.nextElement();
-               Label annotatedLabel = annotated.f1;
-               Identifier idt = annotatedLabel.f0;
-               strAnnotatedLabel = idt.f0.toString(); 
-            }
-         }  
-         Statement stmt = qParStmt.f1;
-         handleStatement(key,stmt,sTable,fTable,"main",isSync,strAnnotatedLabel);
-      }
+      String key = className+":main";
+      ObjectInfo info = new ObjectInfo(key,className,sTable);
+      fTable.setThisPtr(info);
+      handleFunction(qParStatements,className,key,sTable,fTable,secondPass);
       return _ret;
    }
-
-   SymbolTableEntry getEntry(Identifier idt,SymbolTable sTable,FunctionTable fTable){
-      String name = idt.f0.toString();
+   void addMonitorNodes(ArrayList<PEGNode> pegNode,FunctionTable fTable,SymbolTable sTable,ObjectInfo thisPtr){
+      for(PEGNode pNode : pegNode){
+         if(pNode.getIsInSyncBlock() == true){
+            if(!monitorNodes.containsKey(thisPtr)){
+               monitorNodes.put(thisPtr,new ArrayList<PEGNode>());
+            }
+            monitorNodes.get(thisPtr).add(pNode);
+         }
+         if(pNode.getTypeOfNode().equals("start")){
+            SymbolTableEntry entry = getEntry(pNode.getReceiverObject(),sTable,fTable);
+            String classRun = entry.getClassName();
+            String key = classRun + ":run";
+            SymbolTable cSTable = symbolTable.get(classRun);
+            FunctionTable cFTable = symbolTable.get(classRun).getFunctionTables().get("run");
+            cFTable.setThisPtr((ObjectInfo)entry.getValue());
+            addMonitorNodes(PEG.get(key),cFTable,cSTable,cFTable.getThisPtr());
+         }
+      }
+   }
+   void addWaitingNodes(ArrayList<PEGNode> pegNode,FunctionTable fTable,SymbolTable sTable,ObjectInfo thisPtr){
+      for(PEGNode pNode : pegNode){
+         if(pNode.getTypeOfNode().equals("waiting")){
+            SymbolTableEntry entry = getEntry(pNode.getReceiverObject(),sTable,fTable);
+            String classWaiting = entry.getClassName();
+            ObjectInfo waitingObject = (ObjectInfo)entry.getValue();
+            if(!waitingNodes.containsKey(waitingObject)){
+               waitingNodes.put(waitingObject,new ArrayList<PEGNode>());
+            }
+            waitingNodes.get(waitingObject).add(pNode);
+         }
+         if(pNode.getTypeOfNode().equals("start")){
+            SymbolTableEntry entry = getEntry(pNode.getReceiverObject(),sTable,fTable);
+            String classRun = entry.getClassName();
+            String key = classRun + ":run";
+            SymbolTable cSTable = symbolTable.get(classRun);
+            FunctionTable cFTable = symbolTable.get(classRun).getFunctionTables().get("run");
+            cFTable.setThisPtr((ObjectInfo)entry.getValue());
+            addWaitingNodes(PEG.get(key),cFTable,cSTable,cFTable.getThisPtr());
+         }
+      }
+   }
+   void handleFunction(NodeListOptional qParStatements,String className,String key,SymbolTable sTable,FunctionTable fTable,boolean secondPass){
+      if(!secondPass){
+         nodeCounter++;
+         PEG.put(key,new ArrayList<PEGNode>());
+         PEGNode beginNode = new PEGNode(nodeCounter,"main","begin","main",false,null);
+         nodeCounter++;
+         PEG.get(key).add(beginNode);
+         boolean isSync = false;
+         for(Enumeration e = qParStatements.elements();e.hasMoreElements();){
+            QParStatement qParStmt = (QParStatement)e.nextElement();
+            NodeListOptional ann = qParStmt.f0;
+            String strAnnotatedLabel = null;
+            if(ann.present()){
+               for(Enumeration annotation = ann.elements();annotation.hasMoreElements();){
+                  Ann annotated = (Ann)annotation.nextElement();
+                  Label annotatedLabel = annotated.f1;
+                  Identifier idt = annotatedLabel.f0;
+                  strAnnotatedLabel = idt.f0.toString(); 
+               }
+            }  
+            Statement stmt = qParStmt.f1;
+            handleStatement(key,stmt,sTable,fTable,"main",isSync,strAnnotatedLabel);
+         }
+      }else{
+         if(key.equals(className+":main")){
+            addMonitorNodes(PEG.get(key),fTable,sTable,fTable.getThisPtr());
+            addWaitingNodes(PEG.get(key),fTable,sTable,fTable.getThisPtr());
+         }
+      }
+   }
+   SymbolTableEntry getEntry(String name,SymbolTable sTable,FunctionTable fTable){
       if(fTable.getLocalVars().containsKey(name)){
          return fTable.getLocalVars().get(name);
       }else{
@@ -195,42 +260,42 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          AndExpression andExpr = (AndExpression)expr.f0.choice;
          Identifier firstOperand = andExpr.f0;
          Identifier secondOperand = andExpr.f2;
-         SymbolTableEntry entryFirstOperand = getEntry(firstOperand,sTable,fTable);
-         SymbolTableEntry entrySecondOperand = getEntry(secondOperand,sTable,fTable);
+         SymbolTableEntry entryFirstOperand = getEntry(firstOperand.f0.toString(),sTable,fTable);
+         SymbolTableEntry entrySecondOperand = getEntry(secondOperand.f0.toString(),sTable,fTable);
          returnValue = (Boolean)entryFirstOperand.getValue() && (Boolean)entrySecondOperand.getValue();
       }else if(classExpr.equals("CompareExpression")){
          CompareExpression cmpExpr = (CompareExpression)expr.f0.choice;
          Identifier firstOperand = cmpExpr.f0;
          Identifier secondOperand = cmpExpr.f2;
-         SymbolTableEntry entryFirstOperand = getEntry(firstOperand,sTable,fTable);
-         SymbolTableEntry entrySecondOperand = getEntry(secondOperand,sTable,fTable);
+         SymbolTableEntry entryFirstOperand = getEntry(firstOperand.f0.toString(),sTable,fTable);
+         SymbolTableEntry entrySecondOperand = getEntry(secondOperand.f0.toString(),sTable,fTable);
          returnValue = (Integer)entryFirstOperand.getValue() < (Integer)entrySecondOperand.getValue();
       }else if(classExpr.equals("PlusExpression")){
          PlusExpression plusExpr = (PlusExpression)expr.f0.choice;
          Identifier firstOperand = plusExpr.f0;
          Identifier secondOperand = plusExpr.f2;
-         SymbolTableEntry entryFirstOperand = getEntry(firstOperand,sTable,fTable);
-         SymbolTableEntry entrySecondOperand = getEntry(secondOperand,sTable,fTable);
+         SymbolTableEntry entryFirstOperand = getEntry(firstOperand.f0.toString(),sTable,fTable);
+         SymbolTableEntry entrySecondOperand = getEntry(secondOperand.f0.toString(),sTable,fTable);
          returnValue = (Integer)entryFirstOperand.getValue() + (Integer)entrySecondOperand.getValue();
       }else if(classExpr.equals("MinusExpression")){
          MinusExpression minusExpr = (MinusExpression)expr.f0.choice;
          Identifier firstOperand = minusExpr.f0;
          Identifier secondOperand = minusExpr.f2;
-         SymbolTableEntry entryFirstOperand = getEntry(firstOperand,sTable,fTable);
-         SymbolTableEntry entrySecondOperand = getEntry(secondOperand,sTable,fTable);
+         SymbolTableEntry entryFirstOperand = getEntry(firstOperand.f0.toString(),sTable,fTable);
+         SymbolTableEntry entrySecondOperand = getEntry(secondOperand.f0.toString(),sTable,fTable);
          returnValue = (Integer)entryFirstOperand.getValue() - (Integer)entrySecondOperand.getValue();
       }else if(classExpr.equals("TimesExpression")){
          TimesExpression timesExpr = (TimesExpression)expr.f0.choice;
          Identifier firstOperand = timesExpr.f0;
          Identifier secondOperand = timesExpr.f2;
-         SymbolTableEntry entryFirstOperand = getEntry(firstOperand,sTable,fTable);
-         SymbolTableEntry entrySecondOperand = getEntry(secondOperand,sTable,fTable);
+         SymbolTableEntry entryFirstOperand = getEntry(firstOperand.f0.toString(),sTable,fTable);
+         SymbolTableEntry entrySecondOperand = getEntry(secondOperand.f0.toString(),sTable,fTable);
          returnValue = (Integer)entryFirstOperand.getValue() * (Integer)entrySecondOperand.getValue();
       }else if(classExpr.equals("FieldRead")){
          FieldRead fieldRead = (FieldRead)expr.f0.choice;
          Identifier obj = fieldRead.f0;
          Identifier fieldObj = fieldRead.f2;
-         SymbolTableEntry entry = getEntry(obj,sTable,fTable);
+         SymbolTableEntry entry = getEntry(obj.f0.toString(),sTable,fTable);
          SymbolTableEntry field = ((ObjectInfo)(entry.getValue())).getField(fieldObj.f0.toString());
          returnValue = field.getValue();
       }else if(classExpr.equals("PrimaryExpression")){
@@ -245,10 +310,10 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
             returnValue = new Boolean(false);
          }else if(classPrExpr.equals("Identifier")){
             Identifier idt = (Identifier)prExpr.f0.choice;
-            SymbolTableEntry rhsEntry = getEntry(idt,sTable,fTable);
+            SymbolTableEntry rhsEntry = getEntry(idt.f0.toString(),sTable,fTable);
             returnValue = rhsEntry.getValue();
          }else if(classPrExpr.equals("ThisExpression")){
-            returnValue = fTable.getThisPtr().getValue();
+            returnValue = fTable.getThisPtr();
          }else if(classPrExpr.equals("AllocationExpression")){
             AllocationExpression allocExpr = (AllocationExpression)prExpr.f0.choice;
             ObjectInfo objInfo = new ObjectInfo("R"+objCounter,allocExpr.f1.f0.toString(),symbolTable.get(allocExpr.f1.f0.toString()));
@@ -256,7 +321,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          }else if(classPrExpr.equals("NotExpression")){
             NotExpression notExpr = (NotExpression)prExpr.f0.choice;
             Identifier idt = notExpr.f1;
-            SymbolTableEntry rhsEntry = getEntry(idt,sTable,fTable);
+            SymbolTableEntry rhsEntry = getEntry(idt.f0.toString(),sTable,fTable);
             Boolean value = (Boolean)rhsEntry.getValue();
             returnValue = new Boolean(!value);
          }
@@ -271,7 +336,7 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          Expression expr = assignmentStmt.f2;
          String classExpr = expr.f0.choice.getClass().getSimpleName();
          Object value = evaluateExpression(classExpr,expr,sTable,fTable);
-         SymbolTableEntry lhsSTE = getEntry(lhsIdentifier,sTable,fTable);
+         SymbolTableEntry lhsSTE = getEntry(lhsIdentifier.f0.toString(),sTable,fTable);
          lhsSTE.setValue(value);
          PEGNode computeNode = new PEGNode(nodeCounter,lhsSTE.getName(),"compute",threadName,isSync,annotation);
          nodeCounter++;
@@ -301,8 +366,8 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
          Identifier lhsObject = fAssignment.f0;
          Identifier fieldOfObject = fAssignment.f2;
          Identifier rhsObject = fAssignment.f4;
-         SymbolTableEntry lhsObjectEntry = getEntry(lhsObject,sTable,fTable);
-         SymbolTableEntry rhsObjectEntry = getEntry(rhsObject,sTable,fTable);
+         SymbolTableEntry lhsObjectEntry = getEntry(lhsObject.f0.toString(),sTable,fTable);
+         SymbolTableEntry rhsObjectEntry = getEntry(rhsObject.f0.toString(),sTable,fTable);
          ObjectInfo lhsObjectInfo = (ObjectInfo)lhsObjectEntry.getValue();
          lhsObjectInfo.setField(fieldOfObject.f0.toString(),rhsObjectEntry.getValue());
          PEGNode fieldAssignmentNode = new PEGNode(nodeCounter,lhsObjectEntry.getName(),"compute",threadName,isSync,annotation);
@@ -429,32 +494,36 @@ public class ParallelExecutionGraph<R,A> implements GJVisitor<R,A> {
       String className = n.f1.f0.toString();
       SymbolTable sTable = symbolTable.get(className);
       NodeListOptional methods = n.f6;
-      String key = className + ":run";
-      PEG.put(key,new ArrayList<PEGNode>());
-      for(Enumeration method = methods.elements();method.hasMoreElements();){
-         MethodDeclaration methodDecl = (MethodDeclaration)method.nextElement();
-         String methodName = "run";
-         FunctionTable fTable = symbolTable.get(className).getFunctionTables().get(methodName);
-         PEGNode beginNode = new PEGNode(nodeCounter,"this","begin","this",false,null);
-         PEG.get(key).add(beginNode);
-         nodeCounter++;
-         boolean isSync = false;
-         NodeListOptional qParStatements = methodDecl.f9;
-         for(Enumeration e = qParStatements.elements();e.hasMoreElements();){
-            QParStatement qParStmt = (QParStatement)e.nextElement();
-            NodeListOptional ann = qParStmt.f0;
-            String strAnnotatedLabel = null;
-            if(ann.present()){
-               for(Enumeration annotation = ann.elements();annotation.hasMoreElements();){
-                  Ann annotated = (Ann)annotation.nextElement();
-                  Label annotatedLabel = annotated.f1;
-                  Identifier idt = annotatedLabel.f0;
-                  strAnnotatedLabel = idt.f0.toString(); 
-               }
-            }  
-            Statement stmt = qParStmt.f1;
-            handleStatement(key,stmt,sTable,fTable,"this",isSync,strAnnotatedLabel);
+      if(!secondPass){
+         String key = className + ":run";
+         PEG.put(key,new ArrayList<PEGNode>());
+         for(Enumeration method = methods.elements();method.hasMoreElements();){
+            MethodDeclaration methodDecl = (MethodDeclaration)method.nextElement();
+            String methodName = "run";
+            FunctionTable fTable = symbolTable.get(className).getFunctionTables().get(methodName);
+            PEGNode beginNode = new PEGNode(nodeCounter,"this","begin","this",false,null);
+            PEG.get(key).add(beginNode);
+            nodeCounter++;
+            boolean isSync = false;
+            NodeListOptional qParStatements = methodDecl.f9;
+            for(Enumeration e = qParStatements.elements();e.hasMoreElements();){
+               QParStatement qParStmt = (QParStatement)e.nextElement();
+               NodeListOptional ann = qParStmt.f0;
+               String strAnnotatedLabel = null;
+               if(ann.present()){
+                  for(Enumeration annotation = ann.elements();annotation.hasMoreElements();){
+                     Ann annotated = (Ann)annotation.nextElement();
+                     Label annotatedLabel = annotated.f1;
+                     Identifier idt = annotatedLabel.f0;
+                     strAnnotatedLabel = idt.f0.toString(); 
+                  }
+               }  
+               Statement stmt = qParStmt.f1;
+               handleStatement(key,stmt,sTable,fTable,"this",isSync,strAnnotatedLabel);
+            }
          }
+      }else{
+
       }
       
       return _ret;

@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {I}Introduction}{1}{}%
+\contentsline {section}{\numberline {II}Algorithm}{1}{}%
+\contentsline {subsection}{\numberline {\mbox {II-A}}Notation}{1}{}%
+\contentsline {subsection}{\numberline {\mbox {II-B}}Lattice Representation}{1}{}%
+\contentsline {subsection}{\numberline {\mbox {II-C}}Escape Analysis}{2}{}%
+\contentsline {section}{\numberline {III}Example}{3}{}%
+\contentsline {section}{\numberline {IV}Extending the Analysis to Handle Concurrency}{3}{}%

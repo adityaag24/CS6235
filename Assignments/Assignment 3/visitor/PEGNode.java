@@ -7,6 +7,10 @@ public class PEGNode {
     private String threadName;
     private boolean isInSyncBlock;
     private String annotatedLabel;
+    ArrayList<PEGNode> localPred = new ArrayList<PEGNode>();
+    ArrayList<PEGNode> localSucc = new ArrayList<PEGNode>();
+    PEGNode startPred,startSucc;
+    PEGNode waitingEdge;
     PEGNode(int nodeNumber,String receiverObject,String typeOfNode,String threadName,boolean isSync,String annotatedLabel){
         this.nodeNumber = nodeNumber;
         this.receiverObject = receiverObject;

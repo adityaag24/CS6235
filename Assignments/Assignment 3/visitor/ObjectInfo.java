@@ -19,4 +19,10 @@ public class ObjectInfo {
     public void setField(String field,Object value){
         fields.get(field).setValue(value);
     }
+    public String getName(){
+        return name;
+    }
+    public String getClassName(){
+        return className;
+    }
 }

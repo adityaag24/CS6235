@@ -8,7 +8,7 @@ public class FunctionTable {
     NodeToken token;
     String type;
     String key;
-    SymbolTableEntry thisPtr;
+    ObjectInfo thisPtr;
     Map<String,SymbolTableEntry> localVars = new HashMap<String,SymbolTableEntry>();
     NodeListOptional qStatements;
     Object returnValue;
@@ -26,10 +26,10 @@ public class FunctionTable {
     public void setQStatements(NodeListOptional qStatements){
         this.qStatements = qStatements;
     }
-    public void setThisPtr(SymbolTableEntry thisPtr){
+    public void setThisPtr(ObjectInfo thisPtr){
         this.thisPtr = thisPtr;
     }
-    public SymbolTableEntry getThisPtr(){
+    public ObjectInfo getThisPtr(){
         return thisPtr;
     }
     public void addLocalVar(SymbolTableEntry entry){

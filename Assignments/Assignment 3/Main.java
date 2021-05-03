@@ -10,7 +10,18 @@ public class Main {
             SymbolTableBuilder sTableBuilder = new SymbolTableBuilder();
             root.accept(sTableBuilder, null);
             System.out.println("Symbol Table Built.");
-            ParallelExecutionGraph builder = new ParallelExecutionGraph(sTableBuilder.getSymbolTable());
+            ParallelExecutionGraph builder = new ParallelExecutionGraph(sTableBuilder.getSymbolTable(),false);
+            root.accept(builder,null);
+            System.out.println("PEG Nodes Built");
+            builder.setSecondPass();
+            /*Map<String,ArrayList<PEGNode> > PEG = builder.getPEG();
+            for(String functionName:PEG.keySet()){
+                System.out.println("For "+functionName+" function");
+                ArrayList<PEGNode> pegNodes = PEG.get(functionName);
+                for(PEGNode pegNode:pegNodes){
+                    pegNode.print();
+                }
+            }*/
             root.accept(builder,null);
             /*Map<String,SymbolTable> symbolTable = builder.getSymbolTable();
             for(String className : symbolTable.keySet()){
@@ -25,12 +36,20 @@ public class Main {
                     fTable.printTable();
                 }
             }*/
-            Map<String,ArrayList<PEGNode> > PEG = builder.getPEG();
-            for(String functionName:PEG.keySet()){
-                System.out.println("For "+functionName+" function");
-                ArrayList<PEGNode> pegNodes = PEG.get(functionName);
-                for(PEGNode pegNode:pegNodes){
-                    pegNode.print();
+            System.out.println("Printing Monitor Nodes");
+            Map<ObjectInfo,ArrayList<PEGNode> > monitorNodes = builder.getMonitorNodes();
+            for(ObjectInfo oInfo:monitorNodes.keySet()){
+                System.out.println("Object : "+oInfo+" Name : "+oInfo.getName());
+                for(PEGNode mNode : monitorNodes.get(oInfo)){
+                    mNode.print();
+                }
+            }
+            System.out.println("Printing Waiting Nodes");
+            Map<ObjectInfo,ArrayList<PEGNode> > waitingNodes = builder.getWaitingNodes();
+            for(ObjectInfo oInfo:waitingNodes.keySet()){
+                System.out.println("Object : "+oInfo+" Name : "+oInfo.getName());
+                for(PEGNode wNode : waitingNodes.get(oInfo)){
+                    wNode.print();
                 }
             }
             //GJDepthFirst v = new GJDepthFirst();

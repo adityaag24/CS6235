@@ -1,0 +1,483 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7440 64-bit) (preloaded format=pdflatex 2021.4.29)  30 APR 2021 16:43
+entering extended mode
+**./Report.tex
+(Report.tex
+LaTeX2e <2020-10-01> patch level 4
+L3 programming layer <2021-02-18>
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/ieeetran\IEEE
+tran.cls"
+Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
+-- See the "IEEEtran_HOWTO" manual for usage information.
+-- http://www.michaelshell.org/tex/ieeetran/
+\@IEEEtrantmpdimenA=\dimen138
+\@IEEEtrantmpdimenB=\dimen139
+\@IEEEtrantmpdimenC=\dimen140
+\@IEEEtrantmpcountA=\count179
+\@IEEEtrantmpcountB=\count180
+\@IEEEtrantmpcountC=\count181
+\@IEEEtrantmptoksA=\toks15
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 5
+03.
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ptm
+.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+-- Using 8.5in x 11in (letter) paper.
+-- Using PDF output.
+\@IEEEnormalsizeunitybaselineskip=\dimen141
+-- This is a 10 point document.
+\CLASSINFOnormalsizebaselineskip=\dimen142
+\CLASSINFOnormalsizeunitybaselineskip=\dimen143
+\IEEEnormaljot=\dimen144
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <17> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+\IEEEquantizedlength=\dimen145
+\IEEEquantizedlengthdiff=\dimen146
+\IEEEquantizedtextheightdiff=\dimen147
+\IEEEilabelindentA=\dimen148
+\IEEEilabelindentB=\dimen149
+\IEEEilabelindent=\dimen150
+\IEEEelabelindent=\dimen151
+\IEEEdlabelindent=\dimen152
+\IEEElabelindent=\dimen153
+\IEEEiednormlabelsep=\dimen154
+\IEEEiedmathlabelsep=\dimen155
+\IEEEiedtopsep=\skip47
+\c@section=\count182
+\c@subsection=\count183
+\c@subsubsection=\count184
+\c@paragraph=\count185
+\c@IEEEsubequation=\count186
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\c@figure=\count187
+\c@table=\count188
+\@IEEEeqnnumcols=\count189
+\@IEEEeqncolcnt=\count190
+\@IEEEsubeqnnumrollback=\count191
+\@IEEEquantizeheightA=\dimen156
+\@IEEEquantizeheightB=\dimen157
+\@IEEEquantizeheightC=\dimen158
+\@IEEEquantizeprevdepth=\dimen159
+\@IEEEquantizemultiple=\count192
+\@IEEEquantizeboxA=\box47
+\@IEEEtmpitemindent=\dimen160
+\IEEEPARstartletwidth=\dimen161
+\c@IEEEbiography=\count193
+\@IEEEtranrubishbin=\box48
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/cite\cite.sty
+"
+LaTeX Info: Redefining \cite on input line 302.
+LaTeX Info: Redefining \nocite on input line 332.
+Package: cite 2015/02/27  v 5.5
+) ("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
+"
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc
+.sty"
+Package: inputenc 2020/08/01 v1.3d Input encoding file
+\inpenc@prehook=\toks16
+\inpenc@posthook=\toks17
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/listings\list
+ings.sty"
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyv
+al.sty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks18
+)
+\lst@mode=\count194
+\lst@gtempboxa=\box49
+\lst@token=\toks19
+\lst@length=\count195
+\lst@currlwidth=\dimen162
+\lst@column=\count196
+\lst@pos=\count197
+\lst@lostspace=\dimen163
+\lst@width=\dimen164
+\lst@newlines=\count198
+\lst@lineno=\count199
+\lst@maxwidth=\dimen165
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstm
+isc.sty"
+File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
+\c@lstnumber=\count266
+\lst@skipnumbers=\count267
+\lst@framebox=\box50
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/listings\list
+ings.cfg"
+File: listings.cfg 2020/03/24 1.8d listings configuration
+))
+Package: listings 2020/03/24 1.8d (Carsten Heinz)
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics\colo
+r.sty"
+Package: color 2020/02/24 v1.2b Standard LaTeX Color (DPC)
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\
+color.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 147.
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\
+pdftex.def"
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+))
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\book
+tabs.sty"
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen166
+\lightrulewidth=\dimen167
+\cmidrulewidth=\dimen168
+\belowrulesep=\dimen169
+\belowbottomsep=\dimen170
+\aboverulesep=\dimen171
+\abovetopsep=\dimen172
+\cmidrulesep=\dimen173
+\cmidrulekern=\dimen174
+\defaultaddspace=\dimen175
+\@cmidla=\count268
+\@cmidlb=\count269
+\@aboverulesep=\dimen176
+\@belowrulesep=\dimen177
+\@thisruleclass=\count270
+\@lastruleclass=\count271
+\@thisrulewidth=\dimen178
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/caption\capti
+on.sty"
+Package: caption 2020/10/26 v3.5g Customizing captions (AR)
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/caption\capti
+on3.sty"
+Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
+\captionmargin=\dimen179
+\captionmargin@=\dimen180
+\captionwidth=\dimen181
+\caption@tempdima=\dimen182
+\caption@indent=\dimen183
+\caption@parindent=\dimen184
+\caption@hangindent=\dimen185
+Package caption Info: Unknown document class (or package),
+(caption)             standard defaults will be used.
+Package caption Info: \@makecaption = \long macro:#1#2->\ifx \@captype \@IEEEta
+blestring \footnotesize \bgroup \par \centering \@IEEEtabletopskipstrut {\norma
+lfont \footnotesize #1}\\{\normalfont \footnotesize \scshape #2}\par \addvspace
+ {0.5\baselineskip }\egroup \@IEEEtablecaptionsepspace \else \@IEEEfigurecaptio
+nsepspace \setbox \@tempboxa \hbox {\normalfont \footnotesize {#1.}\nobreakspac
+e \nobreakspace #2}\ifdim \wd \@tempboxa >\hsize \setbox \@tempboxa \hbox {\nor
+malfont \footnotesize {#1.}\nobreakspace \nobreakspace }\parbox [t]{\hsize }{\n
+ormalfont \footnotesize \noindent \unhbox \@tempboxa #2}\else \ifCLASSOPTIONcon
+ference \hbox to\hsize {\normalfont \footnotesize \hfil \box \@tempboxa \hfil }
+\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi 
+\fi  on input line 1139.
+)
+
+Package caption Warning: Unknown document class (or package),
+(caption)                standard defaults will be used.
+See the caption package documentation for explanation.
+
+\c@caption@flags=\count272
+\c@continuedfloat=\count273
+Package caption Info: listings package is loaded.
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics\grap
+hicx.sty"
+Package: graphicx 2020/09/09 v1.2b Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics\grap
+hics.sty"
+Package: graphics 2020/08/30 v1.4c Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig
+.sty"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\
+graphics.cfg"
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 105.
+)
+\Gin@req@height=\dimen186
+\Gin@req@width=\dimen187
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/latex-tools\t
+abularx.sty"
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/latex-tools\a
+rray.sty"
+Package: array 2020/10/01 v2.5c Tabular extension package (FMi)
+\col@sep=\dimen188
+\ar@mcellbox=\box51
+\extrarowheight=\dimen189
+\NC@list=\toks20
+\extratabsurround=\skip50
+\backup@length=\skip51
+\ar@cellbox=\box52
+)
+\TX@col@width=\dimen190
+\TX@old@table=\dimen191
+\TX@old@col=\dimen192
+\TX@target=\dimen193
+\TX@delta=\dimen194
+\TX@cols=\count274
+\TX@ftn=\toks21
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/enumitem\enum
+item.sty"
+Package: enumitem 2019/06/20 v3.9 Customized lists
+\labelindent=\skip52
+\enit@outerparindent=\dimen195
+\enit@toks=\toks22
+\enit@inbox=\box53
+\enit@count@id=\count275
+\enitdp@description=\count276
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstl
+ang1.sty"
+File: lstlang1.sty 2020/03/24 1.8d listings language file
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3b
+ackend-pdftex.def"
+File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count277
+\l__pdf_internal_box=\box54
+) (Report.aux)
+\openout1 = `Report.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+
+-- Lines per column: 58 (exact).
+\c@lstlisting=\count278
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\s
+upp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count279
+\scratchdimen=\dimen196
+\scratchbox=\box55
+\nofMPsegments=\count280
+\nofMParguments=\count281
+\everyMPshowfont=\toks23
+\MPscratchCnt=\count282
+\MPscratchDim=\dimen197
+\MPnumerator=\count283
+\makeMPintoPDFobject=\count284
+\everyMPtoPDFconversion=\toks24
+)
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\
+epstopdf-base.sty"
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epst
+opdf-sys.cfg"
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+ (Report.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 3.
+)
+\tf@toc=\write3
+\openout3 = `Report.toc'.
+
+ [0{C:/Users/Aditya Agrawal/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 4
+6.
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr
+.fd"
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Overfull \hbox (42.99608pt too wide) in paragraph at lines 66--75
+[][] 
+ []
+
+[1
+
+
+]
+LaTeX Font Info:    Trying to load font information for OMS+ptm on input line 8
+1.
+
+("C:\Users\Aditya Agrawal\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omsptm
+.fd"
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 81.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 85.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 85.
+
+Overfull \hbox (0.82202pt too wide) in paragraph at lines 85--105
+ [][] 
+ []
+
+
+Overfull \hbox (0.82202pt too wide) in paragraph at lines 108--128
+ [][] 
+ []
+
+
+Underfull \hbox (badness 1997) in paragraph at lines 140--148
+\OT1/ptm/m/n/10 con-sider all the meth-ods that can be called from the
+ []
+
+
+Overfull \hbox (13.60593pt too wide) in paragraph at lines 140--148
+\OMS/cmsy/m/n/10 [\OML/cmm/m/it/10 foreverysubclassC[]ofC\OT1/cmr/m/n/10 (\OML
+/cmm/m/it/10 C[]; m[]; t\OT1/cmr/m/n/10 )(\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 )\O
+ML/cmm/m/it/10 and[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 C; m[]; t\OT1/cmr/m/n/10
+ )(\OML/cmm/m/it/10 i\OT1/cmr/m/n/10 ) =
+ []
+
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 149--152
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 159--177
+[]\OT1/ptm/m/n/10 We will use the ex-am-ple pro-gram as given in
+ []
+
+
+Underfull \hbox (badness 7504) in paragraph at lines 159--177
+\OT1/ptm/m/n/10 the In-tro-duc-tion Sec-tion. The cor-re-spond-ing ta-ble is
+ []
+
+
+Underfull \hbox (badness 2512) in paragraph at lines 159--177
+\OT1/ptm/m/n/10 given be-low for the method LinkedList con-struc-tor. :-
+ []
+
+
+Overfull \hbox (296.94955pt too wide) in paragraph at lines 159--177
+[] 
+ []
+
+
+Underfull \hbox (badness 1354) in paragraph at lines 159--177
+\OT1/ptm/m/n/10 part while the right col-umn pro-vides equa-tions for the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 159--177
+
+ []
+
+[3] (Report.aux) ) 
+Here is how much of TeX's memory you used:
+ 5725 strings out of 479330
+ 94417 string characters out of 2852401
+ 610390 words of memory out of 3000000
+ 23147 multiletter control sequences out of 15000+600000
+ 438905 words of font info for 87 fonts, out of 8000000 for 9000
+ 1144 hyphenation exceptions out of 8191
+ 68i,14n,74p,1609b,1153s stack positions out of 5000i,500n,10000p,200000b,80000s
+{C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/
+enc/dvips/base/8r.enc}<C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Aditya Agrawal/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/Aditya Agraw
+al/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/U
+sers/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmmi8.pfb><C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmr10.pfb><C:/Users/Aditya Agrawal/AppData/Local/Programs/Mi
+KTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/Aditya Agrawal/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/Aditya A
+grawal/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C
+:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
+s/cm/cmsy10.pfb><C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmsy5.pfb><C:/Users/Aditya Agrawal/AppData/Local/Program
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/Aditya Agrawal/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/Ad
+itya Agrawal/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8
+.pfb><C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/type1/urw/cou
+rier/ucrr8a.pfb><C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/urw/times/utmb8a.pfb><C:/Users/Aditya Agrawal/AppData/Local/Programs/MiKTeX
+/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/Aditya Agrawal/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/Aditya Agrawal/AppData/Lo
+cal/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Report.pdf (4 pages, 196933 bytes).
+PDF statistics:
+ 88 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
